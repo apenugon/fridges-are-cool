@@ -29,6 +29,13 @@ int main(int argc, char** argv)
 		exit(-1);
 	}
 
+    //Keep track of best results so far
+    long bestMatches = 0;
+    vector<int> bestpairs;
+    vector<KeyPoint> bestobjKeypoints;
+    vector<KeyPoint> bestimgKeypoints;
+    Mat bestobject;
+
     //Generic initializations and for scene
 	Mat image;
 	double imgscale = 1;
@@ -146,7 +153,15 @@ int main(int argc, char** argv)
                     //printf("%gms\n", t*1000/getTickFrequency());
 
                     printf("Number of matches: %ld\n", pairs.size());
-                    //TODO: Keep track of top match so far
+                    if (pairs.size() > bestMatches)
+                    {
+                        printf("Updating best matches!\n");
+                        bestMatches = pairs.size();
+                        bestpairs = pairs;
+                        bestobject = objectpic;
+                        bestobjKeypoints = objKeypoints;
+                        bestimgKeypoints = imgKeypoints;
+                    }
 				}
 
 				//we are done with the directory
@@ -166,6 +181,24 @@ int main(int argc, char** argv)
 		fprintf(stderr, "Could not open local directory.\n");
 	}
 
+    //set up area where correspondance will be shown with two photos
+    Mat correspond( bestobject.rows + image.rows, std::max(bestobject.cols, image.cols), CV_8UC3);
+    correspond = Scalar(0.);
+    Mat part(correspond, Rect(0, 0, bestobject.cols, bestobject.rows));
+    cvtColor(bestobject, part, CV_GRAY2BGR);
+    part = Mat(correspond, Rect(0, bestobject.rows, image.cols, image.rows));
+    cvtColor(image, part, CV_GRAY2BGR);
 
+    //draw lines between paired features
+    for(int i = 0; i < (int)bestpairs.size(); i += 2 )
+    {
+        line( correspond, bestobjKeypoints[bestpairs[i]].pt,
+                bestimgKeypoints[bestpairs[i+1]].pt + Point2f(0,(float)bestobject.rows),
+                Scalar(0,255,0) );
+    }
+
+    //show pretty picture and wait for user to quit
+    imshow( "Object Correspondence", correspond ); 
+    waitKey(0);
 	return 0;
 }
