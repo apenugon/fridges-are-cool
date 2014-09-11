@@ -1,11 +1,3 @@
-/*
-   The plan is as follows: iterate through file structure to build up a
-   datastructure that represents the features of all of the images,
-   and then take in a test image on the command line in which it will
-   try to find the train images (iterate over list of the images; it's
-   probably easiest to just make it a linked list)
- */
-
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
@@ -37,13 +29,13 @@ int main(int argc, char** argv)
 		exit(-1);
 	}
 
+    //Generic initializations and for scene
 	Mat image;
 	double imgscale = 1;
 	resize(scene,image,Size(), 1./imgscale, 1./imgscale, INTER_CUBIC);
 	Size patchSize(32, 32);
 	LDetector ldetector(7, 20, 2, 2000, patchSize.width, 2);
 	ldetector.setVerbose(true);
-
     vector<Mat> imgpyr;
     int blurKSize = 3;
     double sigma = 0;
@@ -52,6 +44,7 @@ int main(int argc, char** argv)
     vector<KeyPoint> imgKeypoints;
     PatchGenerator gen(0,256,5,true,0.8,1.2,-CV_PI/2,CV_PI/2,-CV_PI/2,CV_PI/2);
 
+    //Traverse directories
 	DIR *d;
 	struct dirent *dir;
 	d = opendir(TRAININGDATA);
@@ -84,11 +77,12 @@ int main(int argc, char** argv)
 					//Don't count the current directory or parent directory
 					if (!strcmp(dir2->d_name,".") || !strcmp(dir2->d_name,".."))
 						continue;
-                    //TODO: Also do not pick files ending in .gz
+                    //Also do not pick files ending in .gz
+                    char *dot = strrchr(dir2->d_name,'.');
+                    if (dot && !strcmp(dot,".gz"))
+                        continue;
 
 					printf("Loading image: %s\n", dir2->d_name);
-
-					//HERE IS WHERE CODE FOR EACH IMAGE SHOULD GO
 
 					//get full filename of the image we want to load
 					char *new_str2 = (char *)malloc(strlen(new_str)+strlen(dir2->d_name)+2);
@@ -134,7 +128,7 @@ int main(int argc, char** argv)
                         if( fs.open(model_filename, FileStorage::WRITE) )
                             detector.write(fs, "ferns_model");
                     }
-                    printf("Now find the keypoints in the image, try recognize them and compute the homography matrix\n");
+                    //printf("Now find the keypoints in the image, try recognize them and compute the homography matrix\n");
                     fs.release();
 
                     vector<int> pairs;
@@ -145,17 +139,14 @@ int main(int argc, char** argv)
                     objKeypoints = detector.getModelPoints();
                     ldetector(imgpyr, imgKeypoints, 300);
 
-                    std::cout << "Object keypoints: " << objKeypoints.size() << "\n";
-                    std::cout << "Image keypoints: " << imgKeypoints.size() << "\n";
+                    //std::cout << "Object keypoints: " << objKeypoints.size() << "\n";
+                    //std::cout << "Image keypoints: " << imgKeypoints.size() << "\n";
                     bool found = detector(imgpyr, imgKeypoints, H, dst_corners, &pairs);
                     t = (double)getTickCount() - t;
-                    printf("%gms\n", t*1000/getTickFrequency());
+                    //printf("%gms\n", t*1000/getTickFrequency());
 
-                    if (found)
-                        printf("FOUND: TRUE\n");
-                    else
-                        printf("FOUND: FALSE\n");
-
+                    printf("Number of matches: %ld\n", pairs.size());
+                    //TODO: Keep track of top match so far
 				}
 
 				//we are done with the directory
