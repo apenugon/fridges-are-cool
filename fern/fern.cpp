@@ -122,8 +122,40 @@ int main(int argc, char** argv)
                     }
                     else
                     {
-                        printf("NOT YET IMPLEMENTED\n");
+                        printf("The file not found and can not be read. Let's train the model.\n");
+                        printf("Step 1. Finding the robust keypoints ...\n");
+                        ldetector.setVerbose(true);
+                        ldetector.getMostStable2D(objectpic, objKeypoints, 100, gen);
+                        printf("Done.\nStep 2. Training ferns-based planar object detector ...\n");
+                        detector.setVerbose(true);
+
+                        detector.train(objpyr, objKeypoints, patchSize.width, 100, 11, 10000, ldetector, gen);
+                        printf("Done.\nStep 3. Saving the model to %s ...\n", model_filename.c_str());
+                        if( fs.open(model_filename, FileStorage::WRITE) )
+                            detector.write(fs, "ferns_model");
                     }
+                    printf("Now find the keypoints in the image, try recognize them and compute the homography matrix\n");
+                    fs.release();
+
+                    vector<int> pairs;
+                    Mat H;
+                    vector<Point2f> dst_corners;
+
+                    double t = (double)getTickCount();
+                    objKeypoints = detector.getModelPoints();
+                    ldetector(imgpyr, imgKeypoints, 300);
+
+                    std::cout << "Object keypoints: " << objKeypoints.size() << "\n";
+                    std::cout << "Image keypoints: " << imgKeypoints.size() << "\n";
+                    bool found = detector(imgpyr, imgKeypoints, H, dst_corners, &pairs);
+                    t = (double)getTickCount() - t;
+                    printf("%gms\n", t*1000/getTickFrequency());
+
+                    if (found)
+                        printf("FOUND: TRUE\n");
+                    else
+                        printf("FOUND: FALSE\n");
+
 				}
 
 				//we are done with the directory
