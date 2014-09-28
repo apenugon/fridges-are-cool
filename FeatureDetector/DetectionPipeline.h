@@ -13,6 +13,8 @@
 #include "opencv2/features2d/features2d.hpp"
 #include "opencv2/nonfree/features2d.hpp"
 #include "opencv2/nonfree/nonfree.hpp"
+#include "opencv2/calib3d/calib3d.hpp"
+#include "opencv2/core/core.hpp"
 #include <stdio.h>
 #include <iostream>
 #include <string>
@@ -22,7 +24,7 @@ using namespace cv;
 
 class DetectionPipeline {
 public:
-    void runPipeline(char* image);
+    void runPipeline(char* image, Mat testImage, Mat testImageDescriptor, vector<KeyPoint> testImageKeypoints);
     void setDir(char* dir);
     void setObjType(char* type);
     void setImageName(char* name);
@@ -32,7 +34,7 @@ private:
     char* matcher;
     char* directory;
     char* objType;
-    char* objectOutput = "/Users/apenugonda/Pictures/OutputPics";
+    char* objectOutput = "/Users/apenugonda/Pictures/OutputHomography";
     char* imageName;
 };
 

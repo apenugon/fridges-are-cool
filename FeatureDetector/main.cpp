@@ -11,7 +11,7 @@
 #include <iostream>
 #include <dirent.h>
 
-#define TRAINING_DATA "/Users/apenugonda/Documents/fridges-are-cool/fern/images/train"
+#define TRAINING_DATA "/Users/apenugonda/Pictures/Objects-640"
 
 using namespace cv;
 using namespace std;
@@ -33,6 +33,25 @@ char* subdirString(char* parent, char* name) {
 
 int main(int argc, const char * argv[])
 {
+    //Load input image
+    Mat testImage = imread("/Users/apenugonda/Pictures/Objects-Test-640/test-1.jpg");
+    
+    //Find keypoints for image 1
+    int minHessian = 400;
+    SiftFeatureDetector detector(minHessian);
+    
+    
+    //Detect keypoints for Test Image
+    vector<KeyPoint> testImKeypoints;
+    
+    detector.detect(testImage, testImKeypoints);
+    
+    //Extract keypoint info
+    SiftDescriptorExtractor extractor;
+    Mat testImDescriptor;
+    
+    extractor.compute(testImage, testImKeypoints, testImDescriptor);
+    
     //Iterate through subdirectories
     DIR *d;
     struct dirent *dir;
@@ -63,7 +82,7 @@ int main(int argc, const char * argv[])
                 printf("Image name: %s\n", imageName);
                 pipeline.setObjType(dir->d_name);
                 pipeline.setImageName(dir2->d_name);
-                pipeline.runPipeline(imageName);
+                pipeline.runPipeline(imageName, testImage, testImDescriptor, testImKeypoints);
                 free(imageName);
             }
             free(subdirName);
