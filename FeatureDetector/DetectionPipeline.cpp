@@ -15,32 +15,74 @@ void DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageDes
     // Step 1: Detect Keypoints
     
     int minHessian = 400;
-    SiftFeatureDetector detector(minHessian);
+    //SiftFeatureDetector detector(minHessian);
+    
+    Ptr<FeatureDetector> detector = FeatureDetector::create("SIFT");
     
     vector<KeyPoint> imageKeypoints;
     
-    detector.detect(im, imageKeypoints);
+    detector->detect(im, imageKeypoints);
     
     // Step 2: Extract keypoints
     
-    SiftDescriptorExtractor extractor;
+    //SiftDescriptorExtractor extractor;
+    Ptr<DescriptorExtractor> extractor = DescriptorExtractor::create("SIFT");
+    
     Mat imageDescriptor;
     
-    extractor.compute(im, imageKeypoints, imageDescriptor);
+    extractor->compute(im, imageKeypoints, imageDescriptor);
     
     // Step 3: Match Keypoints
     
-    BFMatcher matcher(NORM_L2);
+    //BFMatcher matcher(NORM_L2);
+    Ptr<DescriptorMatcher> matcher = DescriptorMatcher::create("BruteForce");
+    
+    vector<DMatch> matchesImageToObject;
+    vector<DMatch> matchesObjectToImage;
     vector<DMatch> matches;
-    matcher.match(imageDescriptor, testImageDescriptor, matches);
-
+    matcher->match(imageDescriptor, testImageDescriptor, matchesImageToObject);
+    matcher->match(testImageDescriptor, imageDescriptor, matchesObjectToImage);
+    
+    /*
+    //Cross-Checking
+    
+    for (DMatch match1 : matchesImageToObject) {
+        for (DMatch match2 : matchesObjectToImage) {
+            if (match1.distance == match2.distance &&
+                match1.queryIdx == match2.trainIdx &&
+                match1.trainIdx == match2.trainIdx) {
+                matches.push_back(match1);
+            }
+        }
+    }*/
+    
+    // Min distance checking:
+    
+    double min = 10000;
+    
+    for (int i = 0; i < testImageDescriptor.rows; i++) {
+        double distance = matchesObjectToImage[i].distance;
+        
+        if (distance < min)
+            min = distance;
+    }
+    
+    for (DMatch match : matchesObjectToImage) {
+        if (match.distance < 2.5 * min)
+            matches.push_back(match);
+    }
+    
+    
+    
+    
     // Draw/Show matches
     Mat img_matches;
-    drawMatches(im, imageKeypoints, testImage, testImageKeypoints, matches, img_matches, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+    drawMatches( testImage, testImageKeypoints, im, imageKeypoints, matches, img_matches, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
     //imshow("Matches", img_matches);
     
-    // Step 4: Ransac
-    
+    // Step 4: Find homography
+    // Need at least 10 matches
+    if (matches.size() > 5) {
     vector<Point2f> obj;
     vector<Point2f> scene;
     
@@ -66,14 +108,7 @@ void DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageDes
     line( img_matches, scene_corners[3] + Point2f(im.cols, 0), scene_corners[4] + Point2f( im.cols, 0), Scalar(0, 255, 0));
     
     imshow("Matches w/ detected object", img_matches);
-    
-    /*
-    //Draw Keypoints on Image
-    
-    Mat keypointsImage;
-    
-    drawKeypoints(im, imageKeypoints, keypointsImage, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
-    */
+    }
     
     /*char nameC[1000];
     strcpy(nameC, objectOutput);
@@ -84,7 +119,7 @@ void DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageDes
     
     //Write image to file
     
-    //imwrite(nameC, img_matches);
+    //imwrite(nameC, img_matches);*/
 }
 
 void DetectionPipeline::setDir(char* dir) {
