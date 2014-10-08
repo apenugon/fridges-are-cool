@@ -34,7 +34,7 @@ private:
     char* matcher;
     char* directory;
     char* objType;
-    char* objectOutput = "/Users/apenugonda/Pictures/OutputHomography";
+//    char* objectOutput// = "/Users/apenugonda/Pictures/OutputHomography";
     char* imageName;
 };
 
