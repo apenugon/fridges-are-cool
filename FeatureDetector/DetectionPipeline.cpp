@@ -8,7 +8,7 @@
 
 #include "DetectionPipeline.h"
 
-void DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageDescriptor, vector<KeyPoint> testImageKeypoints) {
+size_t DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageDescriptor, vector<KeyPoint> testImageKeypoints, bool showImages) {
     //Read image from file
     Mat im = imread(image, 1);
     
@@ -37,11 +37,12 @@ void DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageDes
     //BFMatcher matcher(NORM_L2);
     Ptr<DescriptorMatcher> matcher = DescriptorMatcher::create("BruteForce");
     
-    vector<DMatch> matchesImageToObject;
-    vector<DMatch> matchesObjectToImage;
+    vector<vector<DMatch>> matchesImageToObject;
+    vector<vector<DMatch>> matchesObjectToImage;
+    
     vector<DMatch> matches;
-    matcher->match(imageDescriptor, testImageDescriptor, matchesImageToObject);
-    matcher->match(testImageDescriptor, imageDescriptor, matchesObjectToImage);
+    //matcher->match(imageDescriptor, testImageDescriptor, matchesImageToObject);
+    //matcher->match(testImageDescriptor, imageDescriptor, matchesObjectToImage);
     
     /*
     //Cross-Checking
@@ -56,8 +57,24 @@ void DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageDes
         }
     }*/
     
-    // Min distance checking:
+    matcher->knnMatch(testImageDescriptor, imageDescriptor, matchesObjectToImage, 1);
+    matcher->knnMatch(imageDescriptor, testImageDescriptor, matchesImageToObject, 1);
     
+    for (vector<DMatch> topMatchesObjectToImage : matchesObjectToImage) {
+        for (vector<DMatch> topMatchesImageToObject : matchesImageToObject) {
+            for (DMatch topMatchObjectToImage : topMatchesObjectToImage) {
+                for (DMatch topMatchImageToObject : topMatchesImageToObject) {
+                    if (topMatchObjectToImage.queryIdx == topMatchImageToObject.trainIdx &&
+                        topMatchImageToObject.queryIdx == topMatchObjectToImage.trainIdx) {
+                        matches.push_back(topMatchObjectToImage);
+                    }
+                }
+            }
+        }
+    }
+    
+    // Min distance checking:
+    /*
     double min = 10000;
     
     for (int i = 0; i < testImageDescriptor.rows; i++) {
@@ -70,18 +87,18 @@ void DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageDes
     for (DMatch match : matchesObjectToImage) {
         if (match.distance < 2.5 * min)
             matches.push_back(match);
-    }
+    }*/
     
     
     
     
-    // Draw/Show matches
-    Mat img_matches;
-    drawMatches( testImage, testImageKeypoints, im, imageKeypoints, matches, img_matches, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+
     //imshow("Matches", img_matches);
     
+    
+    
     // Step 4: Find homography
-    // Need at least 10 matches
+    // Need at least 5 matches
     if (matches.size() > 5) {
     vector<Point2f> obj;
     vector<Point2f> scene;
@@ -91,23 +108,48 @@ void DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageDes
         obj.push_back(testImageKeypoints[matches[i].queryIdx].pt);
         scene.push_back(imageKeypoints[matches[i].queryIdx].pt);
     }
+        
+        vector<unsigned char> inliersMask(matches.size());
+    Mat H = findHomography(obj, scene, CV_FM_RANSAC, 15, inliersMask);
     
-    Mat H = findHomography(obj, scene, CV_RANSAC);
-    
+        //Only keep RANSAC inliers
+        vector<DMatch> inliers;
+        
+        for (int i = 0; i < inliersMask.size(); i++) {
+            if (inliersMask[i])
+                inliers.push_back(matches[i]);
+        }
+        
+        // Draw/Show matches
+        Mat img_matches;
+        drawMatches( testImage, testImageKeypoints, im, imageKeypoints, inliers, img_matches, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+        
+        if (showImages) {
+            imshow("Final Matches", img_matches);
+        }
+        
+        
+        return inliers.size();
+        
+        /*
     std::vector<Point2f> obj_corners(4);
     obj_corners[0] = cvPoint(0,0); obj_corners[1] = cvPoint( im.cols, 0 );
     obj_corners[2] = cvPoint( im.cols, im.rows ); obj_corners[3] = cvPoint( 0, im.rows );
     std::vector<Point2f> scene_corners(4);
+    */
+    //perspectiveTransform( obj_corners, scene_corners, H);
     
-    perspectiveTransform( obj_corners, scene_corners, H);
-    
+        /*
     // Draw lines between corners
     line( img_matches, scene_corners[0] + Point2f(im.cols, 0), scene_corners[1] + Point2f( im.cols, 0), Scalar(0, 255, 0));
     line( img_matches, scene_corners[1] + Point2f(im.cols, 0), scene_corners[2] + Point2f( im.cols, 0), Scalar(0, 255, 0));
     line( img_matches, scene_corners[2] + Point2f(im.cols, 0), scene_corners[3] + Point2f( im.cols, 0), Scalar(0, 255, 0));
     line( img_matches, scene_corners[3] + Point2f(im.cols, 0), scene_corners[4] + Point2f( im.cols, 0), Scalar(0, 255, 0));
-    
-    imshow("Matches w/ detected object", img_matches);
+    */
+    //imshow("Matches w/ detected object", img_matches);
+    }
+    else {
+        return 0;
     }
     
     /*char nameC[1000];

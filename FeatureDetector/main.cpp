@@ -6,14 +6,12 @@
 //  Copyright (c) 2014 Akul Penugonda. All rights reserved.
 //
 
-#include "localdefs.h"
 #include "DetectionPipeline.h"
 #include <stdio.h>
 #include <iostream>
 #include <dirent.h>
 
-//NOTE: To get these values, fill out localdefs.h, but do not check in
-//#define TRAINING_DATA "/Users/apenugonda/Pictures/Objects-640"
+#define TRAINING_DATA "/Users/apenugonda/Pictures/Objects-640"
 
 using namespace cv;
 using namespace std;
@@ -36,25 +34,27 @@ char* subdirString(char* parent, char* name) {
 int main(int argc, const char * argv[])
 {
     //Load input image
-    //Mat testImage = imread("/Users/apenugonda/Pictures/Objects-640/cactus/cactus-8.jpg");
-    Mat testImage = imread(TEST_IMAGE);
-
+    char* imName = "/Users/apenugonda/Pictures/Objects-Test-640/test-9.jpg";
+    Mat testImage = imread(imName, 1);
+    
     //Find keypoints for image 1
     int minHessian = 400;
-    SiftFeatureDetector detector(minHessian);
+    Ptr<FeatureDetector> detector = FeatureDetector::create("SIFT");
     
     
     //Detect keypoints for Test Image
     vector<KeyPoint> testImKeypoints;
     
-    detector.detect(testImage, testImKeypoints);
+    detector->detect(testImage, testImKeypoints);
     
     //Extract keypoint info
-    SiftDescriptorExtractor extractor;
+    Ptr<DescriptorExtractor> extractor = DescriptorExtractor::create("SIFT");
     Mat testImDescriptor;
     
-    extractor.compute(testImage, testImKeypoints, testImDescriptor);
+    extractor->compute(testImage, testImKeypoints, testImDescriptor);
     
+    size_t max;
+    char* name;
     //Iterate through subdirectories
     DIR *d;
     struct dirent *dir;
@@ -85,12 +85,26 @@ int main(int argc, const char * argv[])
                 printf("Image name: %s\n", imageName);
                 pipeline.setObjType(dir->d_name);
                 pipeline.setImageName(dir2->d_name);
-                pipeline.runPipeline(imageName, testImage, testImDescriptor, testImKeypoints);
-                free(imageName);
+                size_t curMatches = pipeline.runPipeline(imageName, testImage, testImDescriptor, testImKeypoints, false);
+                if (curMatches > max) {
+                    if (name != NULL) {
+                        free(name);
+                    }
+                    name = imageName;
+                    max = curMatches;
+                } else {
+                    free(imageName);
+                }
             }
             free(subdirName);
         }
     }
+    
+    printf("Best matched file: %s \nNumber of inlier matches: %zu", name, max);
+    pipeline.runPipeline(name, testImage, testImDescriptor, testImKeypoints, true);
+    
+    free(name);
+    
     waitKey(0);
     return 0;
 }

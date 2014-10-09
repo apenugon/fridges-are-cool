@@ -24,7 +24,7 @@ using namespace cv;
 
 class DetectionPipeline {
 public:
-    void runPipeline(char* image, Mat testImage, Mat testImageDescriptor, vector<KeyPoint> testImageKeypoints);
+    size_t runPipeline(char* image, Mat testImage, Mat testImageDescriptor, vector<KeyPoint> testImageKeypoints, bool showImages);
     void setDir(char* dir);
     void setObjType(char* type);
     void setImageName(char* name);
@@ -34,7 +34,7 @@ private:
     char* matcher;
     char* directory;
     char* objType;
-//    char* objectOutput// = "/Users/apenugonda/Pictures/OutputHomography";
+    char* objectOutput = "/Users/apenugonda/Pictures/OutputHomography";
     char* imageName;
 };
 
