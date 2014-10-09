@@ -6,12 +6,14 @@
 //  Copyright (c) 2014 Akul Penugonda. All rights reserved.
 //
 
+#include "localdefs.h"
 #include "DetectionPipeline.h"
 #include <stdio.h>
 #include <iostream>
 #include <dirent.h>
 
-#define TRAINING_DATA "/Users/apenugonda/Pictures/Objects-640"
+//NOTE: To get these values, fill out localdefs.h, but do not check in
+//#define TRAINING_DATA "/Users/apenugonda/Pictures/Objects-640"
 
 using namespace cv;
 using namespace std;
@@ -34,7 +36,8 @@ char* subdirString(char* parent, char* name) {
 int main(int argc, const char * argv[])
 {
     //Load input image
-    Mat testImage = imread("/Users/apenugonda/Pictures/Objects-640/cactus/cactus-8.jpg");
+    //Mat testImage = imread("/Users/apenugonda/Pictures/Objects-640/cactus/cactus-8.jpg");
+    Mat testImage = imread(TEST_IMAGE);
 
     //Find keypoints for image 1
     int minHessian = 400;
