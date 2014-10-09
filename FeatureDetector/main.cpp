@@ -35,7 +35,7 @@ int main(int argc, const char * argv[])
 {
     //Load input image
     Mat testImage = imread("/Users/apenugonda/Pictures/Objects-640/cactus/cactus-8.jpg");
-    
+
     //Find keypoints for image 1
     int minHessian = 400;
     SiftFeatureDetector detector(minHessian);
