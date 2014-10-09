@@ -11,6 +11,7 @@
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/features2d/features2d.hpp"
+#include "opencv2/nonfree/nonfree.hpp"
 #include <stdio.h>
 
 class DetectionPipeline {
@@ -27,7 +28,6 @@ private:
     char* matcherName;
     char* directory;
     char* objType;
-    char* objectOutput = "/Users/apenugonda/Pictures/OutputHomography";
     char* imageName;
 };
 
