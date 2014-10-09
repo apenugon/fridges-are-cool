@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Akul Penugonda. All rights reserved.
 //
 
+#include "localdefs.h"
 #include "ComparisonCheck.h"
 #include "DetectionPipeline.h"
 #include "opencv2/highgui/highgui.hpp"
@@ -22,7 +23,7 @@
 using namespace cv;
 using namespace std;
 
-#define TRAINING_DATA "/Users/apenugonda/Pictures/Objects-640"
+//#define TRAINING_DATA "/Users/apenugonda/Pictures/Objects-640"
 
 bool ComparisonCheck::has_suffix(const std::string &str, const std::string &suffix)
 {
@@ -52,7 +53,8 @@ ComparisonCheck::~ComparisonCheck() {
 
 int ComparisonCheck::runCheck(char* imagePath, char* actual) {
     //Load input image
-    char* imName = "/Users/apenugonda/Pictures/Objects-Test-640/test-3.jpg";
+    //char* imName = "/Users/apenugonda/Pictures/Objects-Test-640/test-3.jpg";
+    char* imName = TEST_IMAGE;
     Mat testImage = imread(imagePath, 1);
     
     //Find keypoints for image 1

@@ -6,12 +6,13 @@
 //  Copyright (c) 2014 Akul Penugonda. All rights reserved.
 //
 
+#include "localdefs.h"
 #include "DetectionPipeline.h"
 #include <stdio.h>
 #include <iostream>
 #include <dirent.h>
 
-#define TRAINING_DATA "/Users/apenugonda/Pictures/Objects-640"
+//#define TRAINING_DATA "/Users/apenugonda/Pictures/Objects-640"
 
 using namespace cv;
 using namespace std;
@@ -33,8 +34,12 @@ char* subdirString(char* parent, char* name) {
 
 int main(int argc, const char * argv[])
 {
+    //Load nonfree modules
+    cv::initModule_nonfree();
+
     //Load input image
-    char* imName = "/Users/apenugonda/Pictures/Objects-Test-640/test-9.jpg";
+    //char* imName = "/Users/apenugonda/Pictures/Objects-Test-640/test-9.jpg";
+    char* imName = TEST_IMAGE;
     Mat testImage = imread(imName, 1);
     
     //Find keypoints for image 1

@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Akul Penugonda. All rights reserved.
 //
 
+#include "localdefs.h"
 #include "DetectionPipeline.h"
 #include "ComparisonCheck.h"
 #include <stdio.h>
@@ -14,7 +15,7 @@
 
 using namespace std;
 
-#define TESTING_DATA "/Users/apenugonda/Pictures/Objects-Test-640"
+//#define TESTING_DATA "/Users/apenugonda/Pictures/Objects-Test-640"
 
 int fileIterate(char* detector, char* extractor, char* matcher) {
     int total = 0;
@@ -70,6 +71,9 @@ int handleError( int status, const char* func_name,
 
 int main(int argc, const char * argv[])
 {
+    //Initialize nonfree module
+    cv::initModule_nonfree();
+
     vector<char*> detectors = {"FAST", "STAR", "SIFT", "SURF", "ORB", "BRISK", "MSER", "GFTT", "HARRIS"};
     vector<char*> extractors = {"SIFT", "SURF", "BRIEF", "BRISK", "ORB", "FREAK"};
     vector<char*> matchers = {"BruteForce-Hamming", "BruteForce", "BruteForce-L1",  "BruteForce-Hamming(2)", "FlannBased"};
@@ -105,7 +109,7 @@ int main(int argc, const char * argv[])
     }*/
     //printf("Best Stats: Detector: %s, Extractor: %s, Matcher: %s, Correct: %i", bestDetector, bestExtractor, bestMatcher, max);
     ComparisonCheck *newCheck = new ComparisonCheck("SIFT", "SIFT", "BruteForce");
-    newCheck->runCheck("/Users/apenugonda/Pictures/Objects-Test-640/whippedcream/test-15.jpg", "cactus");
+    newCheck->runCheck(TEST_IMAGE, "cactus");
     delete newCheck;
 }
 
