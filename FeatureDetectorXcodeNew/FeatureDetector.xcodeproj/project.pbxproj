@@ -27,7 +27,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		D245E30519D099B300117A19 /* keffront.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = keffront.jpg; path = ../../../../../../../../Documents/FeatureDetect/FeatureDetector/keffront.jpg; sourceTree = BUILT_PRODUCTS_DIR; };
+		D245E30519D099B300117A19 /* keffront.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = keffront.jpg; sourceTree = "<group>"; };
 		D245E30719D0D14700117A19 /* DetectionPipeline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DetectionPipeline.cpp; sourceTree = "<group>"; };
 		D245E30819D0D14700117A19 /* DetectionPipeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetectionPipeline.h; sourceTree = "<group>"; };
 		D26E0B4719D0962F003FE137 /* FeatureDetector */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = FeatureDetector; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -35,6 +35,7 @@
 		D26E0B4C19D0962F003FE137 /* FeatureDetector.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = FeatureDetector.1; sourceTree = "<group>"; };
 		D2E8CB5E19E65BD6003DDA2D /* ComparisonCheck.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ComparisonCheck.cpp; sourceTree = "<group>"; };
 		D2E8CB5F19E65BD6003DDA2D /* ComparisonCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComparisonCheck.h; sourceTree = "<group>"; };
+		D2EF203D19E7347E00C06E33 /* localdefs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = localdefs.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +69,7 @@
 		D26E0B4919D0962F003FE137 /* FeatureDetector */ = {
 			isa = PBXGroup;
 			children = (
+				D2EF203D19E7347E00C06E33 /* localdefs.h */,
 				D26E0B4A19D0962F003FE137 /* main.cpp */,
 				D2E8CB5E19E65BD6003DDA2D /* ComparisonCheck.cpp */,
 				D2E8CB5F19E65BD6003DDA2D /* ComparisonCheck.h */,

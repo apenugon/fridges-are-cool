@@ -53,8 +53,6 @@ ComparisonCheck::~ComparisonCheck() {
 
 int ComparisonCheck::runCheck(char* imagePath, char* actual) {
     //Load input image
-    //char* imName = "/Users/apenugonda/Pictures/Objects-Test-640/test-3.jpg";
-    char* imName = TEST_IMAGE;
     Mat testImage = imread(imagePath, 1);
     
     //Find keypoints for image 1
