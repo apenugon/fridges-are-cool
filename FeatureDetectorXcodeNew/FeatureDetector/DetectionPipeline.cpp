@@ -13,6 +13,7 @@
 #include "opencv2/nonfree/features2d.hpp"
 #include "opencv2/nonfree/nonfree.hpp"
 #include "opencv2/calib3d/calib3d.hpp"
+#include "opencv2/video/video.hpp"
 #include <stdio.h>
 #include <iostream>
 #include <string>
@@ -110,15 +111,53 @@ size_t DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageD
     Mat img_matches;
     drawMatches( testImage, testImageKeypoints, im, imageKeypoints, matches, img_matches, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
     
-    imshow("Crosscheck Results", img_matches);
+    //imshow("Crosscheck Results", img_matches);
     
-    waitKey(0);
+    //waitKey(0);
 
     //imshow("Matches", img_matches);
     
+    // Find affine transform
+    if (matches.size() > 5) {
+        vector<Point2f> obj;
+        vector<Point2f> scene;
+        
+        for (int i = 0; i < matches.size(); i++) {
+            obj.push_back(testImageKeypoints[matches[i].queryIdx].pt);
+            scene.push_back(imageKeypoints[matches[i].queryIdx].pt);
+        }
+        
+        
+        
+        Mat transform = getAffineTransform(obj, scene);
+        
+        double ssd = 0;
+        
+        vector<Point3f> homPts;
+        
+        for (Point2f objPt : obj) {
+            homPts.push_back(Point3f(objPt.x, objPt.y, 1));
+        }
+        
+        vector<Point2f> actual;
+        
+        for (Point3f homPt : homPts) {
+            Mat matPt = transform * Mat(homPt);
+            Point2f pt = Point2f(matPt);
+            actual.push_back(pt);
+        }
+        for (Point2f actualPt : actual) {
+            for (Point2f scenePt : scene) {
+                ssd += pow(sqrt(pow(actualPt.x - scenePt.x, 2) + pow(actualPt.y - scenePt.y, 2)), 2);
+            }
+        }
+        
+        return ssd;
+    }
+    
     // Step 4: Find homography
     // Need at least 5 matches
-    if (matches.size() > 5) {
+    if (matches.size() > 5 && false) {
         vector<Point2f> obj;
         vector<Point2f> scene;
     
@@ -128,7 +167,7 @@ size_t DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageD
         }
         
         vector<unsigned char> inliersMask(matches.size());
-        Mat H = findHomography(obj, scene, CV_RANSAC, 1, inliersMask);
+        //Mat H = findHomography(obj, scene, CV_RANSAC, 1, inliersMask);
     
         //Only keep RANSAC inliers
         vector<DMatch> inliers;
@@ -143,6 +182,9 @@ size_t DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageD
         drawMatches( testImage, testImageKeypoints, im, imageKeypoints, inliers, img_matches, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
         
         imshow("RANSAC", img_matches);
+        
+        //Mat R = estimateRigidTransform(obj, scene, true);
+        
         waitKey(0);
         
         return inliers.size();
