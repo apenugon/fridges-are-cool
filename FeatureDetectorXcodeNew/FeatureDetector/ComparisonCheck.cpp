@@ -52,6 +52,7 @@ ComparisonCheck::~ComparisonCheck() {
 }
 
 int ComparisonCheck::runCheck(char* imagePath, char* actual) {
+    cout << "Image: " << imagePath << endl;
     //Load input image
     Mat testImage = imread(imagePath, 1);
     

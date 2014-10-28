@@ -109,7 +109,7 @@ int main(int argc, const char * argv[])
     }*/
     //printf("Best Stats: Detector: %s, Extractor: %s, Matcher: %s, Correct: %i", bestDetector, bestExtractor, bestMatcher, max);
     ComparisonCheck *newCheck = new ComparisonCheck("SIFT", "SIFT", "BruteForce");
-    newCheck->runCheck(TEST_IMAGE, "cactus");
+    newCheck->runCheck("/Users/apenugonda/Pictures/Objects-Test-640/cactus/test-11.jpg", "cactus");
     delete newCheck;
 }
 

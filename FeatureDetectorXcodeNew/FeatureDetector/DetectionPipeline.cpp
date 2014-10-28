@@ -18,8 +18,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <string>
-
-#undef DEBUG
+#include <sys/stat.h>
 
 using namespace std;
 using namespace cv;
@@ -37,6 +36,11 @@ double sqr(double x) {
     return x * x;
 }
 
+bool fileExists(char* fileName) {
+    struct stat buffer;
+    return (stat(fileName, &buffer) == 0);
+}
+
 DetectionPipeline::~DetectionPipeline() {
 }
 
@@ -44,13 +48,33 @@ size_t DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageD
     //Read image from file
     Mat im = imread(image, 1);
     
+    
+    
+    vector<KeyPoint> imageKeypoints;
+    
+    Mat imageDescriptor;
+    
+    char storeName[1000];
+    strcpy(storeName, image);
+    strcat(storeName, "bin");
+    
+    if (fileExists(storeName)) {
+    
+    // Check if keypoints/descriptors are already stored
+    FileStorage store(storeName, FileStorage::READ);
+    
+    FileNode keyNode = store["keypoints"];
+    read(keyNode, imageKeypoints);
+    FileNode descNode = store["descriptor"];
+    read(descNode, imageDescriptor);
+    
+        store.release();
+    } else {
+    
     // Step 1: Detect Keypoints
     
     int minHessian = 400;
     //SiftFeatureDetector detector(minHessian);
-    
-    vector<KeyPoint> imageKeypoints;
-    
     Ptr<FeatureDetector> detector = FeatureDetector::create(detectorName);
     detector->detect(im, imageKeypoints);
     
@@ -58,11 +82,17 @@ size_t DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageD
     
     //SiftDescriptorExtractor extractor;
     
-    Mat imageDescriptor;
-    
     Ptr<DescriptorExtractor> extractor = DescriptorExtractor::create(extractorName);
     extractor->compute(im, imageKeypoints, imageDescriptor);
     
+        FileStorage store(storeName, FileStorage::WRITE);
+        
+        write(store, "keypoints", imageKeypoints);
+        write(store, "descriptor", imageDescriptor);
+        
+        store.release();
+        
+    }
     // Step 3: Match Keypoints
     
     vector<vector<DMatch>> matchesImageToObject;
@@ -103,13 +133,14 @@ size_t DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageD
     
     
     Mat img_matches;
+    /*
 #ifdef DEBUG
     drawMatches( testImage, testImageKeypoints, im, imageKeypoints, matches, img_matches, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
     
     imshow("Pre-Crosscheck Results", img_matches);
     
     waitKey(0);
-#endif
+#endif */
     //Remove top/bottom 20%
     
     float threshold = .2; //Top and Bottom threshold%
@@ -128,7 +159,7 @@ size_t DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageD
         }
     }
     matches.resize(k);
-    
+    /*
 #ifdef DEBUG
     // Draw/Show matches
     drawMatches( testImage, testImageKeypoints, im, imageKeypoints, matches, img_matches, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
@@ -136,7 +167,30 @@ size_t DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageD
     imshow("Crosscheck Results", img_matches);
     
     waitKey(0);
-#endif
+#endif*/
+    
+    // Eliminate matches that have too large of a y-delta
+    float yDelta = 50;
+    k = 0;
+    for (int i = 0; i < matches.size(); i++) {
+        Point2f p0 = testImageKeypoints.at(matches.at(i).queryIdx).pt;
+        Point2f p1 = imageKeypoints.at(matches.at(i).trainIdx).pt;
+        
+        if (abs(p0.y - p1.y) <= yDelta) {
+            matches[k] = matches[i];
+            k++;
+        }
+    }
+    matches.resize(k);
+    /*
+#ifdef DEBUG
+    // Draw/Show matches
+    drawMatches( testImage, testImageKeypoints, im, imageKeypoints, matches, img_matches, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+    
+    imshow("Y-Delta Results", img_matches);
+    
+    waitKey(0);
+#endif*/
 
     //imshow("Matches", img_matches);
     
@@ -153,6 +207,7 @@ size_t DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageD
         //estimateAffine3D(<#InputArray src#>, <#InputArray dst#>, <#OutputArray out#>, <#OutputArray inliers#>)
         Mat R = estimateRigidTransform(obj, scene, 0);
         
+        if (R.rows != 0) {
         Mat_<float> r = R;
         
         int k = 0;
@@ -176,6 +231,11 @@ size_t DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageD
         imshow("Rigid", img_matches);
         
         waitKey(0);
+            
+            return inlierMatches.size();
+        } else {
+            return 0;
+        }
     }
     
     // Affine
@@ -268,9 +328,7 @@ size_t DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageD
         Mat img_matches;
         drawMatches( testImage, testImageKeypoints, im, imageKeypoints, inliers, img_matches, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
         
-        //imshow("RANSAC", img_matches);
-        
-        waitKey(0);
+        imshow("RANSAC", img_matches);
         
         return inliers.size();
     }
