@@ -38,11 +38,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FeatureDetector/DetectionPipeline.cpp"
-            timestampString = "436155226.405031"
+            timestampString = "436159324.801636"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "315"
-            endingLineNumber = "315"
+            startingLineNumber = "318"
+            endingLineNumber = "318"
             landmarkName = "DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageDescriptor, vector&lt;KeyPoint&gt; testImageKeypoints, bool showImages)"
             landmarkType = "5">
          </BreakpointContent>
@@ -148,11 +148,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FeatureDetector/DetectionPipeline.cpp"
-            timestampString = "436155226.405031"
+            timestampString = "436159324.801636"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "396"
-            endingLineNumber = "396"
+            startingLineNumber = "401"
+            endingLineNumber = "401"
             landmarkName = "DetectionPipeline::estimateGlobalMotionRansac( InputArray points0, InputArray points1, int model, const cv::videostab::RansacParams &amp;params, float *rmse, int *ninliers, int iters, vector&lt;Point2f&gt; &amp;best0, vector&lt;Point2f&gt; &amp;best1)"
             landmarkType = "5">
          </BreakpointContent>
@@ -164,11 +164,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FeatureDetector/DetectionPipeline.cpp"
-            timestampString = "436155226.405031"
+            timestampString = "436159324.801636"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "349"
-            endingLineNumber = "349"
+            startingLineNumber = "354"
+            endingLineNumber = "354"
             landmarkName = "DetectionPipeline::estimateGlobalMotionRansac( InputArray points0, InputArray points1, int model, const cv::videostab::RansacParams &amp;params, float *rmse, int *ninliers, int iters, vector&lt;Point2f&gt; &amp;best0, vector&lt;Point2f&gt; &amp;best1)"
             landmarkType = "5">
          </BreakpointContent>
@@ -180,11 +180,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FeatureDetector/DetectionPipeline.cpp"
-            timestampString = "436155226.405031"
+            timestampString = "436159324.801636"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "242"
-            endingLineNumber = "242"
+            startingLineNumber = "245"
+            endingLineNumber = "245"
             landmarkName = "DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageDescriptor, vector&lt;KeyPoint&gt; testImageKeypoints, bool showImages)"
             landmarkType = "5">
          </BreakpointContent>
@@ -196,11 +196,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FeatureDetector/DetectionPipeline.cpp"
-            timestampString = "436155226.405031"
+            timestampString = "436159324.801636"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "244"
-            endingLineNumber = "244"
+            startingLineNumber = "247"
+            endingLineNumber = "247"
             landmarkName = "DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageDescriptor, vector&lt;KeyPoint&gt; testImageKeypoints, bool showImages)"
             landmarkType = "5">
          </BreakpointContent>
@@ -212,11 +212,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FeatureDetector/DetectionPipeline.cpp"
-            timestampString = "436155226.405031"
+            timestampString = "436159324.801636"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "255"
-            endingLineNumber = "255"
+            startingLineNumber = "258"
+            endingLineNumber = "258"
             landmarkName = "DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageDescriptor, vector&lt;KeyPoint&gt; testImageKeypoints, bool showImages)"
             landmarkType = "5">
          </BreakpointContent>
@@ -228,11 +228,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FeatureDetector/DetectionPipeline.cpp"
-            timestampString = "436155226.405031"
+            timestampString = "436159324.801636"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "303"
-            endingLineNumber = "303"
+            startingLineNumber = "306"
+            endingLineNumber = "306"
             landmarkName = "DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageDescriptor, vector&lt;KeyPoint&gt; testImageKeypoints, bool showImages)"
             landmarkType = "5">
          </BreakpointContent>
@@ -244,11 +244,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FeatureDetector/DetectionPipeline.cpp"
-            timestampString = "436155226.405031"
+            timestampString = "436158863.604714"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "146"
-            endingLineNumber = "146"
+            startingLineNumber = "134"
+            endingLineNumber = "134"
             landmarkName = "DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageDescriptor, vector&lt;KeyPoint&gt; testImageKeypoints, bool showImages)"
             landmarkType = "5">
          </BreakpointContent>
@@ -260,11 +260,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FeatureDetector/DetectionPipeline.cpp"
-            timestampString = "436155226.405031"
+            timestampString = "436158863.604714"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "208"
-            endingLineNumber = "208"
+            startingLineNumber = "123"
+            endingLineNumber = "123"
             landmarkName = "DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageDescriptor, vector&lt;KeyPoint&gt; testImageKeypoints, bool showImages)"
             landmarkType = "5">
          </BreakpointContent>
@@ -276,27 +276,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FeatureDetector/DetectionPipeline.cpp"
-            timestampString = "436155226.405031"
+            timestampString = "436159324.801636"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "135"
-            endingLineNumber = "135"
-            landmarkName = "DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageDescriptor, vector&lt;KeyPoint&gt; testImageKeypoints, bool showImages)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "FeatureDetector/DetectionPipeline.cpp"
-            timestampString = "436155226.405031"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "211"
-            endingLineNumber = "211"
+            startingLineNumber = "214"
+            endingLineNumber = "214"
             landmarkName = "DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageDescriptor, vector&lt;KeyPoint&gt; testImageKeypoints, bool showImages)"
             landmarkType = "5">
          </BreakpointContent>
@@ -315,6 +299,54 @@
             endingLineNumber = "40"
             landmarkName = "fileExists(char* fileName)"
             landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "FeatureDetector/DetectionPipeline.cpp"
+            timestampString = "436159324.801636"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "213"
+            endingLineNumber = "213"
+            landmarkName = "DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageDescriptor, vector&lt;KeyPoint&gt; testImageKeypoints, bool showImages)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "FeatureDetector/DetectionPipeline.cpp"
+            timestampString = "436159473.556066"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "217"
+            endingLineNumber = "217"
+            landmarkName = "DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageDescriptor, vector&lt;KeyPoint&gt; testImageKeypoints, bool showImages)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "FeatureDetector/DetectionPipeline.cpp"
+            timestampString = "436159541.349032"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "238"
+            endingLineNumber = "238"
+            landmarkName = "DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageDescriptor, vector&lt;KeyPoint&gt; testImageKeypoints, bool showImages)"
+            landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

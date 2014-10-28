@@ -102,21 +102,10 @@ size_t DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageD
     //matcher->match(imageDescriptor, testImageDescriptor, matchesImageToObject);
     //matcher->match(testImageDescriptor, imageDescriptor, matchesObjectToImage);
     
-    /*
-    //Cross-Checking
-    
-    for (DMatch match1 : matchesImageToObject) {
-        for (DMatch match2 : matchesObjectToImage) {
-            if (match1.distance == match2.distance &&
-                match1.queryIdx == match2.trainIdx &&
-                match1.trainIdx == match2.trainIdx) {
-                matches.push_back(match1);
-            }
-        }
-    }*/
-    Ptr<DescriptorMatcher> matcher = DescriptorMatcher::create(matcherName);
-    matcher->knnMatch(testImageDescriptor, imageDescriptor, matchesObjectToImage, 1);
-    matcher->knnMatch(imageDescriptor, testImageDescriptor, matchesImageToObject, 1);
+    int num_neighbors = 2;
+    Ptr<DescriptorMatcher> matcher = DescriptorMatcher::create("FlannBased");
+    matcher->knnMatch(testImageDescriptor, imageDescriptor, matchesObjectToImage, num_neighbors);
+    matcher->knnMatch(imageDescriptor, testImageDescriptor, matchesImageToObject, num_neighbors);
     
     for (vector<DMatch> topMatchesObjectToImage : matchesObjectToImage) {
         for (vector<DMatch> topMatchesImageToObject : matchesImageToObject) {
@@ -158,8 +147,7 @@ size_t DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageD
             k++;
         }
     }
-    matches.resize(k);
-    /*
+    matches.resize(k);/*
 #ifdef DEBUG
     // Draw/Show matches
     drawMatches( testImage, testImageKeypoints, im, imageKeypoints, matches, img_matches, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
@@ -169,6 +157,22 @@ size_t DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageD
     waitKey(0);
 #endif*/
     
+    // Find average x and y deltas
+    
+    float xDeltaAvg = 0;
+    float yDeltaAvg = 0;
+    
+    for (DMatch m : matches) {
+        Point2f p0 = testImageKeypoints.at(m.queryIdx).pt;
+        Point2f p1 = imageKeypoints.at(m.trainIdx).pt;
+        
+        xDeltaAvg += p0.x - p1.x;
+        
+        yDeltaAvg += p0.y - p1.y;
+    }
+    xDeltaAvg = xDeltaAvg / matches.size();
+    yDeltaAvg = yDeltaAvg / matches.size();
+    
     // Eliminate matches that have too large of a y-delta
     float yDelta = 50;
     k = 0;
@@ -176,7 +180,8 @@ size_t DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageD
         Point2f p0 = testImageKeypoints.at(matches.at(i).queryIdx).pt;
         Point2f p1 = imageKeypoints.at(matches.at(i).trainIdx).pt;
         
-        if (abs(p0.y - p1.y) <= yDelta) {
+        if (abs(p0.y - p1.y - yDeltaAvg) <= yDelta &&
+            abs(p0.x - p1.x - xDeltaAvg) <= yDelta) {
             matches[k] = matches[i];
             k++;
         }
@@ -195,7 +200,7 @@ size_t DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageD
     //imshow("Matches", img_matches);
     
     // Rigid
-    if (matches.size() > 5 && false) {
+    if (matches.size() > 5) {
         vector<Point2f> obj;
         vector<Point2f> scene;
         
@@ -204,7 +209,6 @@ size_t DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageD
             scene.push_back(imageKeypoints[matches[i].queryIdx].pt);
         }
         
-        //estimateAffine3D(<#InputArray src#>, <#InputArray dst#>, <#OutputArray out#>, <#OutputArray inliers#>)
         Mat R = estimateRigidTransform(obj, scene, 0);
         
         if (R.rows != 0) {
@@ -329,6 +333,8 @@ size_t DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageD
         drawMatches( testImage, testImageKeypoints, im, imageKeypoints, inliers, img_matches, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
         
         imshow("RANSAC", img_matches);
+        
+        waitKey(0);
         
         return inliers.size();
     }

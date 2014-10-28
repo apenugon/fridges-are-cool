@@ -72,7 +72,7 @@ int ComparisonCheck::runCheck(char* imagePath, char* actual) {
     
     extractor->compute(testImage, testImKeypoints, testImDescriptor);
     
-    double min = INT_MAX;
+    double max = -1;
     char* name;
     //Iterate through subdirectories
     DIR *d;
@@ -104,9 +104,9 @@ int ComparisonCheck::runCheck(char* imagePath, char* actual) {
                 pipeline->setObjType(dir->d_name);
                 pipeline->setImageName(dir2->d_name);
                 double ssd = pipeline->runPipeline(imageName, testImage, testImDescriptor, testImKeypoints, false);
-                if (ssd < min) {
+                if (ssd > max) {
                     name = dir->d_name;
-                    min = ssd;
+                    max = ssd;
                 }
                 free(imageName);
             }
@@ -114,7 +114,7 @@ int ComparisonCheck::runCheck(char* imagePath, char* actual) {
         }
     }
     
-    printf("Best matched file: %s \nNumber of inlier matches: %f", name, min);
+    printf("Best matched file: %s \nNumber of inlier matches: %f", name, max);
     //pipeline->runPipeline(name, testImage, testImDescriptor, testImKeypoints, false);
     if (strcmp(name, actual) == 0)
         return 1;
