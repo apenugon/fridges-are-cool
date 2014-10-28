@@ -245,6 +245,7 @@
 					"-lopencv_video",
 					"-lopencv_calib3d",
 					"-lopencv_imgproc",
+					"-lopencv_videostab",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -277,6 +278,7 @@
 					"-lopencv_video",
 					"-lopencv_calib3d",
 					"-lopencv_imgproc",
+					"-lopencv_videostab",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

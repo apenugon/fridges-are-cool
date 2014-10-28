@@ -71,7 +71,7 @@ int ComparisonCheck::runCheck(char* imagePath, char* actual) {
     
     extractor->compute(testImage, testImKeypoints, testImDescriptor);
     
-    size_t max = 0;
+    double min = INT_MAX;
     char* name;
     //Iterate through subdirectories
     DIR *d;
@@ -102,10 +102,10 @@ int ComparisonCheck::runCheck(char* imagePath, char* actual) {
                 //printf("Image name: %s\n", imageName);
                 pipeline->setObjType(dir->d_name);
                 pipeline->setImageName(dir2->d_name);
-                size_t curMatches = pipeline->runPipeline(imageName, testImage, testImDescriptor, testImKeypoints, false);
-                if (curMatches > max) {
+                double ssd = pipeline->runPipeline(imageName, testImage, testImDescriptor, testImKeypoints, false);
+                if (ssd < min) {
                     name = dir->d_name;
-                    max = curMatches;
+                    min = ssd;
                 }
                 free(imageName);
             }
@@ -113,7 +113,7 @@ int ComparisonCheck::runCheck(char* imagePath, char* actual) {
         }
     }
     
-    printf("Best matched file: %s \nNumber of inlier matches: %zu", name, max);
+    printf("Best matched file: %s \nNumber of inlier matches: %f", name, min);
     //pipeline->runPipeline(name, testImage, testImDescriptor, testImKeypoints, false);
     if (strcmp(name, actual) == 0)
         return 1;
