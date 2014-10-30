@@ -15,8 +15,6 @@
 
 using namespace std;
 
-//#define TESTING_DATA "/Users/apenugonda/Pictures/Objects-Test-640"
-
 int fileIterate(char* detector, char* extractor, char* matcher) {
     int total = 0;
     int correct = 0;
@@ -109,7 +107,11 @@ int main(int argc, const char * argv[])
     }*/
     //printf("Best Stats: Detector: %s, Extractor: %s, Matcher: %s, Correct: %i", bestDetector, bestExtractor, bestMatcher, max);
     ComparisonCheck *newCheck = new ComparisonCheck("SIFT", "SIFT", "BruteForce");
-    newCheck->runCheck("/Users/apenugonda/Pictures/Objects-Test-640/whippedcream/test-16.jpg", "cactus");
+    char *testname = "/test-16.jpg";
+    char *checkobj = (char *)malloc(sizeof(char)*(strlen(TESTING_DATA)+strlen(testname)+2));
+    strcpy(checkobj,TESTING_DATA);
+    strcat(checkobj,testname);
+    newCheck->runCheck(checkobj, "cactus");
     delete newCheck;
 }
 

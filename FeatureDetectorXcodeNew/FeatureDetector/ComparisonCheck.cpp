@@ -23,8 +23,6 @@
 using namespace cv;
 using namespace std;
 
-//#define TRAINING_DATA "/Users/apenugonda/Pictures/Objects-640"
-
 bool ComparisonCheck::has_suffix(const std::string &str, const std::string &suffix)
 {
     return str.size() >= suffix.size() &&
