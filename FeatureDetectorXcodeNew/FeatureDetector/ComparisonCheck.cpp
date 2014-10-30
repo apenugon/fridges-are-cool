@@ -64,6 +64,13 @@ int ComparisonCheck::runCheck(char* imagePath, char* actual) {
     
     detector->detect(testImage, testImKeypoints);
     
+    //Detect ORB keypoints for image
+    vector<KeyPoint> orbKeypoints;
+    detector = FeatureDetector::create("ORB");
+    detector->detect(testImage, orbKeypoints);
+    
+    testImKeypoints.insert(testImKeypoints.end(), orbKeypoints.begin(), orbKeypoints.end());
+    
     //Extract keypoint info
     Ptr<DescriptorExtractor> extractor = DescriptorExtractor::create(this->extractor);
     Mat testImDescriptor;

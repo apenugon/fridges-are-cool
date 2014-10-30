@@ -20,6 +20,8 @@
 #include <string>
 #include <sys/stat.h>
 
+#undef DEBUG
+
 using namespace std;
 using namespace cv;
 using namespace videostab;
@@ -77,7 +79,13 @@ size_t DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageD
     //SiftFeatureDetector detector(minHessian);
     Ptr<FeatureDetector> detector = FeatureDetector::create(detectorName);
     detector->detect(im, imageKeypoints);
+        
+        vector<KeyPoint> orbKeypoints;
+        detector = FeatureDetector::create("ORB");
+        detector->detect(im, orbKeypoints);
     
+        imageKeypoints.insert(imageKeypoints.end(), orbKeypoints.begin(), orbKeypoints.end());
+        
     // Step 2: Extract keypoints
     
     //SiftDescriptorExtractor extractor;
@@ -93,6 +101,28 @@ size_t DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageD
         store.release();
         
     }
+    /*
+    vector<KeyPoint> orbKeypointsObj;
+    vector<KeyPoint> orbKeypointsIm;
+    
+    //Add ORB keypoints
+    Ptr<FeatureDetector> OrbDetector = FeatureDetector::create("ORB");
+    OrbDetector->detect(im, orbKeypointsIm);
+    
+    OrbDetector->detect(testImage, testImageKeypoints);
+    
+    OrbDetector->detect(testImage, orbKeypointsObj);
+    
+    
+    imageKeypoints.insert(imageKeypoints.end(), orbKeypointsIm.begin(), orbKeypointsIm.end());
+    testImageKeypoints.insert(testImageKeypoints.end(), orbKeypointsObj.begin(), orbKeypointsObj.end());
+    
+    
+    Ptr<DescriptorExtractor> extractor = DescriptorExtractor::create(extractorName);
+    extractor->compute(im, imageKeypoints, imageDescriptor);
+    
+    extractor->compute(testImage, testImageKeypoints, testImageDescriptor);
+    */
     // Step 3: Match Keypoints
     
     vector<vector<DMatch>> matchesImageToObject;
@@ -102,11 +132,35 @@ size_t DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageD
     //matcher->match(imageDescriptor, testImageDescriptor, matchesImageToObject);
     //matcher->match(testImageDescriptor, imageDescriptor, matchesObjectToImage);
     
-    int num_neighbors = 2;
-    Ptr<DescriptorMatcher> matcher = DescriptorMatcher::create("FlannBased");
+    int num_neighbors = 1     ;
+    Ptr<DescriptorMatcher> matcher = DescriptorMatcher::create("BruteForce");
     matcher->knnMatch(testImageDescriptor, imageDescriptor, matchesObjectToImage, num_neighbors);
     matcher->knnMatch(imageDescriptor, testImageDescriptor, matchesImageToObject, num_neighbors);
     
+    /*
+    //Ratio Test
+    for (vector<DMatch> topMatchesObjectToImage : matchesObjectToImage) {
+        DMatch first = topMatchesObjectToImage.at(0);
+        Point2f pfirst1 = testImageKeypoints.at(first.queryIdx).pt;
+        Point2f pfirst2 = testImageKeypoints.at(first.trainIdx).pt;
+        DMatch second = topMatchesObjectToImage.at(1);
+        
+        Point2f pSecond1 = testImageKeypoints.at(second.queryIdx).pt;
+        Point2f pSecond2 = testImageKeypoints.at(second.trainIdx).pt;
+        
+        auto dist1 = hypot(pfirst1.x - pfirst2.x, pfirst1.y - pfirst2.y);
+        auto dist2 = hypot(pSecond1.x - pSecond2.x, pSecond1.y - pSecond2.y);
+        
+        auto lesser = dist1 < dist2 ? dist1 : dist2;
+        
+        auto greater = dist1 < dist2 ? dist2 : dist1;
+        
+        if (2 * lesser < greater ) {
+            matches.push_back(first);
+        }
+    }*/
+    
+    //Cross-Check
     for (vector<DMatch> topMatchesObjectToImage : matchesObjectToImage) {
         for (vector<DMatch> topMatchesImageToObject : matchesImageToObject) {
             for (DMatch topMatchObjectToImage : topMatchesObjectToImage) {
@@ -122,14 +176,14 @@ size_t DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageD
     
     
     Mat img_matches;
-    /*
+    
 #ifdef DEBUG
     drawMatches( testImage, testImageKeypoints, im, imageKeypoints, matches, img_matches, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
     
     imshow("Pre-Crosscheck Results", img_matches);
     
     waitKey(0);
-#endif */
+#endif
     //Remove top/bottom 20%
     
     float threshold = .2; //Top and Bottom threshold%
@@ -147,7 +201,7 @@ size_t DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageD
             k++;
         }
     }
-    matches.resize(k);/*
+    matches.resize(k);
 #ifdef DEBUG
     // Draw/Show matches
     drawMatches( testImage, testImageKeypoints, im, imageKeypoints, matches, img_matches, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
@@ -155,7 +209,7 @@ size_t DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageD
     imshow("Crosscheck Results", img_matches);
     
     waitKey(0);
-#endif*/
+#endif
     
     // Find average x and y deltas
     
@@ -173,8 +227,8 @@ size_t DetectionPipeline::runPipeline(char* image, Mat testImage, Mat testImageD
     xDeltaAvg = xDeltaAvg / matches.size();
     yDeltaAvg = yDeltaAvg / matches.size();
     
-    // Eliminate matches that have too large of a y-delta
-    float yDelta = 50;
+    // Eliminate matches that have too much of a deviant x- or y-delta
+    float yDelta = 25;
     k = 0;
     for (int i = 0; i < matches.size(); i++) {
         Point2f p0 = testImageKeypoints.at(matches.at(i).queryIdx).pt;
