@@ -107,7 +107,7 @@ int main(int argc, const char * argv[])
     }*/
     //printf("Best Stats: Detector: %s, Extractor: %s, Matcher: %s, Correct: %i", bestDetector, bestExtractor, bestMatcher, max);
     ComparisonCheck *newCheck = new ComparisonCheck("SIFT", "SIFT", "BruteForce");
-    char *testname = "/whippedcream/test-16.jpg";
+    char *testname = "/chobani/test-4.jpg";
     char *checkobj = (char *)malloc(sizeof(char)*(strlen(TESTING_DATA)+strlen(testname)+2));
     strcpy(checkobj,TESTING_DATA);
     strcat(checkobj,testname);
